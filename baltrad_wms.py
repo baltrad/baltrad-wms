@@ -61,8 +61,12 @@ def wms_request(req,settings):
                 layers[l_name].opacity = int(opacity)
             else:
                 layers[l_name].opacity = 70 # default opacity
-            layers[l_name].metadata.set("wms_title", new_layer_title)
-            layers[l_name].metadata.set("wms_timeitem", "TIFFTAG_DATETIME")
+            try: # old mapserver
+                layers[l_name].metadata.set("wms_title", new_layer_title)
+                layers[l_name].metadata.set("wms_timeitem", "TIFFTAG_DATETIME")
+            except AttributeError: # new mapserver
+                layers[l_name].setMetaData("wms_title", new_layer_title)
+                layers[l_name].setMetaData("wms_timeitem", "TIFFTAG_DATETIME")
             layers[l_name].template = "featureinfo.html"
             # set style class
             class_name_config = config.get(dataset_name, "style")
@@ -77,7 +81,6 @@ def wms_request(req,settings):
                     processing.append(item[1])
                     style.width = 2     
                     style.color.setRGB( 0,0,0 )
-                    processing.append(item[1])
                 else:
                     c.name = class_values[0]
                     c.title = item[0]
@@ -89,8 +92,12 @@ def wms_request(req,settings):
                 layers[l_name].addProcessing( "CONTOUR_LEVELS=%s" % ",".join(processing) )
     if "capabilities" in request_type.lower():
         # set online resource
-        map_object.web.metadata.set("wms_onlineresource", \
-                config.get("locations","online_resource") )
+        try: # old mapserver
+            map_object.web.metadata.set("wms_onlineresource", \
+                    config.get("locations","online_resource") )
+        except AttributeError: # new mapserver
+            map_object.setMetaData("wms_onlineresource", \
+                    config.get("locations","online_resource") )
         # write timestamps
         for layer_name in layers.keys():
             if contour:
@@ -106,8 +113,12 @@ def wms_request(req,settings):
                     radar_timestamps.append(r.timestamp.strftime("%Y-%m-%dT%H:%M:00Z"))
                 if len(radar_timestamps)==0:
                     continue
-                layers[layer_name+layer_type].metadata.set("wms_timeextent", ",".join(radar_timestamps))
-                layers[layer_name+layer_type].metadata.set("wms_timedefault", radar_timestamps[0])
+                try: # old mapserver
+                    layers[layer_name+layer_type].metadata.set("wms_timeextent", ",".join(radar_timestamps))
+                    layers[layer_name+layer_type].metadata.set("wms_timedefault", radar_timestamps[0])
+                except AttributeError: # new mapserver
+                    layers[layer_name+layer_type].setMetaData("wms_timeextent", ",".join(radar_timestamps))
+                    layers[layer_name+layer_type].setMetaData("wms_timedefault", radar_timestamps[0])
                 # setup projection definition
                 projdef = radar_datasets[0].projdef
                 if not "epsg" in projdef:
@@ -135,6 +146,8 @@ def wms_request(req,settings):
             radar_dataset = session.query(RadarDataset)\
                     .filter(RadarDataset.name==get_query_layer(layer_name))\
                     .order_by(RadarDataset.timestamp.desc()).all()
+	    if len(radar_dataset)==0 : 
+		continue
             layers[layer_name].data = radar_dataset[0].geotiff_path
             layers[layer_name].setProjection( radar_dataset[0].projdef )
             bbox =  map(float,radar_dataset[0].bbox_original.split(",") )

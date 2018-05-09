@@ -72,7 +72,8 @@ function update_meta () {
             var layers = doc.getElementsByTagName("Layer")[0].getElementsByTagName("Layer");
             for (i=0;i<layers.length;i++) {
                 if (layers[i].getElementsByTagName("Name")[0].childNodes[0].nodeValue.split(",")[0]==layer_name) {
-                    var time_values = getDataOfImmediateChild(layers[i], "Extent").split(",");
+                    // var time_values = getDataOfImmediateChild(layers[i], "Extent").split(","); // old mapserver
+                    var time_values = getDataOfImmediateChild(layers[i], "Dimension").split(","); // new mapserver
                     var select = document.getElementsByTagName("select")[1];
                     select.options.length = 0;
                     for (k=0;k<time_values.length;k++)
