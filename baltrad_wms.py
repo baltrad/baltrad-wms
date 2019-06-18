@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 # read config
 import ConfigParser
 from configurator import *
@@ -58,15 +57,26 @@ def wms_request(req,settings):
                 layers[l_name].classitem = "[pixel]"
             layers[l_name].status = mapscript.MS_ON
             if str(opacity).isdigit():
-                layers[l_name].opacity = int(opacity)
+                layers[l_name].setOpacity(int(opacity))
             else:
+<<<<<<< HEAD
                 layers[l_name].opacity = 70 # default opacity
+            try:
+                layers[l_name].metadata.set("wms_title", new_layer_title)
+                layers[l_name].metadata.set("wms_timeitem", "TIFFTAG_DATETIME")
+            except AttributeError:
+                layers[l_name].setMetaData("wms_title", new_layer_title)
+                layers[l_name].setMetaData("wms_timeitem", "TIFFTAG_DATETIME")
+
+=======
+                layers[l_name].setOpacity(70) # default opacity
             try: # old mapserver
                 layers[l_name].metadata.set("wms_title", new_layer_title)
                 layers[l_name].metadata.set("wms_timeitem", "TIFFTAG_DATETIME")
             except AttributeError: # new mapserver
                 layers[l_name].setMetaData("wms_title", new_layer_title)
                 layers[l_name].setMetaData("wms_timeitem", "TIFFTAG_DATETIME")
+>>>>>>> 8d7147674c62ac21d38e1c41bf6603099fd03899
             layers[l_name].template = "featureinfo.html"
             # set style class
             class_name_config = config.get(dataset_name, "style")
@@ -92,10 +102,17 @@ def wms_request(req,settings):
                 layers[l_name].addProcessing( "CONTOUR_LEVELS=%s" % ",".join(processing) )
     if "capabilities" in request_type.lower():
         # set online resource
+<<<<<<< HEAD
+        try:
+            map_object.web.metadata.set("wms_onlineresource", \
+                    config.get("locations","online_resource") )
+        except AttributeError:
+=======
         try: # old mapserver
             map_object.web.metadata.set("wms_onlineresource", \
                     config.get("locations","online_resource") )
         except AttributeError: # new mapserver
+>>>>>>> 8d7147674c62ac21d38e1c41bf6603099fd03899
             map_object.setMetaData("wms_onlineresource", \
                     config.get("locations","online_resource") )
         # write timestamps
@@ -113,10 +130,17 @@ def wms_request(req,settings):
                     radar_timestamps.append(r.timestamp.strftime("%Y-%m-%dT%H:%M:00Z"))
                 if len(radar_timestamps)==0:
                     continue
+<<<<<<< HEAD
+                try:
+                    layers[layer_name+layer_type].set("wms_timeextent", ",".join(radar_timestamps))
+                    layers[layer_name+layer_type].set("wms_timedefault", radar_timestamps[0])
+                except AttributeError:
+=======
                 try: # old mapserver
                     layers[layer_name+layer_type].metadata.set("wms_timeextent", ",".join(radar_timestamps))
                     layers[layer_name+layer_type].metadata.set("wms_timedefault", radar_timestamps[0])
                 except AttributeError: # new mapserver
+>>>>>>> 8d7147674c62ac21d38e1c41bf6603099fd03899
                     layers[layer_name+layer_type].setMetaData("wms_timeextent", ",".join(radar_timestamps))
                     layers[layer_name+layer_type].setMetaData("wms_timedefault", radar_timestamps[0])
                 # setup projection definition
