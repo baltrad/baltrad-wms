@@ -59,24 +59,13 @@ def wms_request(req,settings):
             if str(opacity).isdigit():
                 layers[l_name].setOpacity(int(opacity))
             else:
-<<<<<<< HEAD
                 layers[l_name].opacity = 70 # default opacity
-            try:
+            try: # old mapserver
                 layers[l_name].metadata.set("wms_title", new_layer_title)
                 layers[l_name].metadata.set("wms_timeitem", "TIFFTAG_DATETIME")
             except AttributeError:
                 layers[l_name].setMetaData("wms_title", new_layer_title)
                 layers[l_name].setMetaData("wms_timeitem", "TIFFTAG_DATETIME")
-
-=======
-                layers[l_name].setOpacity(70) # default opacity
-            try: # old mapserver
-                layers[l_name].metadata.set("wms_title", new_layer_title)
-                layers[l_name].metadata.set("wms_timeitem", "TIFFTAG_DATETIME")
-            except AttributeError: # new mapserver
-                layers[l_name].setMetaData("wms_title", new_layer_title)
-                layers[l_name].setMetaData("wms_timeitem", "TIFFTAG_DATETIME")
->>>>>>> 8d7147674c62ac21d38e1c41bf6603099fd03899
             layers[l_name].template = "featureinfo.html"
             # set style class
             class_name_config = config.get(dataset_name, "style")
