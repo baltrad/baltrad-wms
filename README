@@ -2,6 +2,8 @@ BALTRAD WMS
 ===========
 by Tuomas Peltonen, STUK <tuomas.peltonen@stuk.fi>
 
+This code is not maintained anymore. The development continues at https://github.com/savelov/radar-wms.
+
 Dependencies
 ------------
 * Python version 2.6 or higher
